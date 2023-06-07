@@ -34,7 +34,7 @@ module.exports = {
       url: 'https://api.spotify.com/v1/search',
       method: 'get',
       params: {
-        q: 'album',
+        q: album,
         type: 'album',
         limit: 1,
       },
@@ -55,7 +55,7 @@ module.exports = {
       })
       .then((response) => {
         console.log('success getting album tracks');
-        response.send(200).send(response.data);
+        res.status(200).send(response.data);
       })
       .catch((err) => {
         console.error('Error getting album tracks', err);
