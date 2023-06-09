@@ -3,6 +3,22 @@ const axios = require('axios');
 
 const { client_id, client_secret } = process.env;
 
+const getAlbumTracksFromSpotify = (token, albumId) => axios({
+  url: `https://api.spotify.com/v1/albums/${albumId}/tracks`,
+  method: 'get',
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+})
+  .then((response) => {
+    console.log('success getting album tracks');
+    return response.data.items;
+  })
+  .catch((err) => {
+    console.error('Error getting album tracks', err);
+    throw err;
+  });
+
 module.exports = {
   getToken: (req, res) => {
     axios({
@@ -29,37 +45,17 @@ module.exports = {
   },
 
   getAlbumTracks: (req, res) => {
-    const { access_token, album } = req.body;
-    axios({
-      url: 'https://api.spotify.com/v1/search',
-      method: 'get',
-      params: {
-        q: album,
-        type: 'album',
-        limit: 1,
-      },
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    })
-      .then((response) => {
-        const albumId = response.data.albums.items[0].id;
-
-        return axios({
-          url: `https://api.spotify.com/v1/albums/${albumId}/tracks`,
-          method: 'get',
-          headers: {
-            Authorization: `Bearer ${access_token}`,
-          },
-        });
-      })
-      .then((response) => {
-        console.log('success getting album tracks');
-        res.status(200).send(response.data);
+    const { token, albumId } = req.body;
+    getAlbumTracksFromSpotify(token, albumId)
+      .then((tracks) => {
+        console.log('this is tracks >>>>>>>>>', tracks);
+        res.status(200).send(tracks);
       })
       .catch((err) => {
         console.error('Error getting album tracks', err);
         res.sendStatus(500);
       });
   },
+
+  getAlbumTracksFromSpotify,
 };

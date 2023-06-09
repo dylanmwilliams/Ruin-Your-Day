@@ -1,13 +1,9 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+require('dotenv').config();
 const mongoose = require('mongoose');
-
-mongoose.set('strictQuery', true);
 
 const mongo = process.env.MONGODB;
 
-const db = mongoose.connect(mongo, { useNewUrlParser: true });
-
-db
+mongoose.connect(mongo, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log(`Connected to: ${mongo}`))
   .catch((err) => {
     console.log(`There was a problem connecting to mongo at: ${mongo}`);
@@ -21,7 +17,14 @@ const songSchema = new mongoose.Schema({
 
 const Song = mongoose.model('Song', songSchema);
 
-module.exports = {
-  db,
-  Song,
-};
+Song.deleteMany({})
+  .then(() => {
+    console.log('Deleted all documents from Song collection');
+  })
+  .catch((err) => {
+    console.log('Error deleting documents:', err);
+  })
+  .finally(() => {
+    // Close the mongoose connection
+    mongoose.connection.close();
+  });
