@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "test",
+    "clearDB": "node server/db/clearDB.js",
     "react-dev": "npx webpack --watch --mode development",
     "server": "nodemon ./server"
   },
